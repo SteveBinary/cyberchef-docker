@@ -1,3 +1,3 @@
-FROM nginxinc/nginx-unprivileged:latest
+FROM nginxinc/nginx-unprivileged:alpine
 
 COPY cyberchef /usr/share/nginx/html
