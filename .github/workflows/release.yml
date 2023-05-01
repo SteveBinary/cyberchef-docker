@@ -49,9 +49,9 @@ jobs:
       - name: Download, unzip and prepare the index.html
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
         run: >
-          wget ${{ env.DOWNLOAD_URL }} -O cyberchef.zip
-          && unzip cyberchef.zip -d cyberchef
-          && mv cyberchef/CyberChef_*.html cyberchef/index.html
+          wget ${{ env.DOWNLOAD_URL }} -O ./cyberchef.zip
+          && unzip ./cyberchef.zip -d ./cyberchef
+          && mv ./cyberchef/CyberChef_*.html ./cyberchef/index.html
 
       - name: Login to GitHub Container Registry
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
@@ -66,4 +66,5 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
+          context: .
           tags: ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }}
