@@ -18,6 +18,6 @@ if __name__ == "__main__":
 
     content = response.json()
 
-    current_version = str(content["tag_name"])
+    current_version = str(content["tag_name"]).removeprefix("v")
 
     print(current_version, sep="")
