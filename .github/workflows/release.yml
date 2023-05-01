@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # every morning at 1:00
+
+env:
+  PYTHON_VERSION: 3.11
+  CONTAINER_REGISTRY: ghcr.io
+  IMAGE_NAME: stevebinary/cyberchef-docker
+
+permissions:
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Check for complete release
+        id: is_complete_release
+        run: echo "is_complete_release=$(python is_complete_release.py)" >> $GITHUB_OUTPUT
+
+      - name: Get current CyberChef version
+        if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
+        run: >
+          echo "CURRENT_VERSION=$(python get_current_version.py)" >> $GITHUB_ENV
+          && source $GITHUB_ENV
+          && echo ${{ env.CURRENT_VERSION }}
+
+      - name: Get CyberChef download URL
+        if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
+        run: >
+          echo "DOWNLOAD_URL=$(python get_download_url.py)" >> $GITHUB_ENV
+          && source $GITHUB_ENV
+          && echo ${{ env.DOWNLOAD_URL }}
+
+      - name: Download, unzip and prepare the index.html
+        if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
+        run: >
+          wget ${{ env.DOWNLOAD_URL }} -O cyberchef.zip
+          && unzip cyberchef.zip
+          && mv cyberchef/CyberChef_*.html cyberchef/index.html
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }}
