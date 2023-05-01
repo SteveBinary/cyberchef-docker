@@ -50,7 +50,7 @@ jobs:
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
         run: >
           wget ${{ env.DOWNLOAD_URL }} -O cyberchef.zip
-          && unzip cyberchef.zip
+          && unzip cyberchef.zip - cyberchef
           && mv cyberchef/CyberChef_*.html cyberchef/index.html
 
       - name: Login to GitHub Container Registry
