@@ -34,24 +34,24 @@ jobs:
 
       - name: Get current CyberChef version
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        run: >
+        run: |-
           echo "CURRENT_VERSION=$(python get_current_version.py)" >> $GITHUB_ENV
-          && source $GITHUB_ENV
-          && echo ${{ env.CURRENT_VERSION }}
+          source $GITHUB_ENV
+          echo ${{ env.CURRENT_VERSION }}
 
       - name: Get CyberChef download URL
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        run: >
+        run: |-
           echo "DOWNLOAD_URL=$(python get_download_url.py)" >> $GITHUB_ENV
-          && source $GITHUB_ENV
-          && echo ${{ env.DOWNLOAD_URL }}
+          source $GITHUB_ENV
+          echo ${{ env.DOWNLOAD_URL }}
 
       - name: Download, unzip and prepare the index.html
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        run: >
+        run: |-
           wget ${{ env.DOWNLOAD_URL }} -O ./cyberchef.zip
-          && unzip ./cyberchef.zip -d ./cyberchef
-          && mv ./cyberchef/CyberChef_*.html ./cyberchef/index.html
+          unzip ./cyberchef.zip -d ./cyberchef
+          mv ./cyberchef/CyberChef_*.html ./cyberchef/index.html
 
       - name: Set up QEMU
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
@@ -75,4 +75,7 @@ jobs:
         with:
           push: true
           context: .
-          tags: ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }},${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64,linux/arm64
+          tags: >-
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }},
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
