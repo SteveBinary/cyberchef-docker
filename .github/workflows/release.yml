@@ -6,7 +6,7 @@ on:
     - cron: "0 1 * * *" # every morning at 1:00
 
 env:
-  PYTHON_VERSION: 3.11
+  PYTHON_VERSION: 3.12
   CONTAINER_REGISTRY: ghcr.io
   IMAGE_NAME: stevebinary/cyberchef
 
@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -55,15 +55,15 @@ jobs:
 
       - name: Set up QEMU
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ github.repository_owner }}
@@ -71,7 +71,7 @@ jobs:
 
       - name: Build and push Docker image
         if: ${{ steps.is_complete_release.outputs.is_complete_release == 'yes' }}
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           push: true
           context: .
@@ -79,3 +79,15 @@ jobs:
           tags: >-
             ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }},
             ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  delete-untagged-images:
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Delete untagged images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: cyberchef
+          package-type: container
+          min-versions-to-keep: 0
+          delete-only-untagged-versions: true
