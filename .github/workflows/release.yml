@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -75,7 +75,9 @@ jobs:
         with:
           push: true
           context: .
-          provenance: false # fix corrupted image manifest
+          # fix corrupted image manifest (some weird issue with multi-arch builds and this action) / prevent the unknown architecture
+          # -> TODO: revisit and assess if it is still neccessary
+          provenance: false
           platforms: linux/amd64,linux/arm64
           tags: >-
             ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }},
