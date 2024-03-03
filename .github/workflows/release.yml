@@ -75,6 +75,7 @@ jobs:
         with:
           push: true
           context: .
+          provenance: false # fix corrupted image manifest
           platforms: linux/amd64,linux/arm64
           tags: >-
             ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.CURRENT_VERSION }},
