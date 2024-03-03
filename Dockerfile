@@ -1,4 +1,4 @@
-FROM nginxinc/nginx-unprivileged:alpine
+FROM --platform=$BUILDPLATFORM nginxinc/nginx-unprivileged:alpine
 
 COPY cyberchef /usr/share/nginx/html
 
