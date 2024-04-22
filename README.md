@@ -1,3 +1,6 @@
+> [!IMPORTANT]  
+> This repository is no longer maintained because there is finally an [official Docker image](https://github.com/gchq/CyberChef/pkgs/container/cyberchef).
+
 # cyberchef-docker
 
 [CyberChef by GCHQ](https://github.com/gchq/CyberChef) is the Cyber Swiss Army Knife. [Most of its features](https://github.com/gchq/CyberChef#features) are executed completely on the client, eliminating most privacy concerns. With this Docker image you can go a step further and self-host CyberChef, localy or on a server, for offline usage and even more privacy.
